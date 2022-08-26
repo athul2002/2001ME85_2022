@@ -1,3 +1,2 @@
-# 2001ME85_2022
-
-hello
+# CS384_2022
+Tuts Assignments
