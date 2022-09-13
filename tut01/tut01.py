@@ -30,9 +30,52 @@ for i in range(len(df)):
         df["Octant"][i]=4
     elif df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]<0:
         df["Octant"][i]=-4
+df['']=''
+df['Octant ID']=''
+df['1']=''
+df['-1']=''
+df['2']=''
+df['-2']=''
+df['3']=''
+df['-3']=''
+df['4']=''
+df['-4']=''
+df['Octant ID'][0]="Octant Count"
+df.reset_index(drop=True) 
+count1=0
+count2=0
+count3=0
+count4=0
+count11=0
+count22=0
+count33=0
+count44=0 
+for i in range(len(df)):
+    if df['Octant'][i]==1:
+        count1+=1
+    elif df['Octant'][i]==-1:
+        count11+=1
+    elif df['Octant'][i]==2:
+        count2+=1
+    elif df['Octant'][i]==-2:
+        count22+=1
+    elif df['Octant'][i]==3:
+        count3+=1
+    elif df['Octant'][i]==-3:
+        count33+=1
+    elif df['Octant'][i]==4:
+        count4+=1
+    elif df['Octant'][i]==-4:
+        count44+=1
+df['1'][0]=count1
+df['-1'][0]=count11
+df['2'][0]=count2
+df['-2'][0]=count22
+df['3'][0]=count3
+df['-3'][0]=count33
+df['4'][0]=count4
+df['-4'][0]=count44
 df.to_csv('octant_output.csv', index=False)  
-df.reset_index(drop=True)  
-
 #def octact_identification(mod=5000):
     
 
