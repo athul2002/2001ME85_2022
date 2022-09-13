@@ -9,6 +9,9 @@ df['V Avg'][0]=V_Avg
 W_Avg  = df['W'].mean()
 df['W Avg']=''
 df['W Avg'][0]=W_Avg
+df["U'=U - U avg"]=df['U']-df['U Avg'][0]
+df["V'=V - V avg"]=df['V']-df['V Avg'][0]
+df["W'=W - W avg"]=df['W']-df['W Avg'][0]
 df.to_csv('octant_output.csv', index=False)  
 df.reset_index(drop=True)  
 #def octact_identification(mod=5000):
