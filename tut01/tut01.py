@@ -1,7 +1,17 @@
+def octact_identification(mod=5000):
+    df.at[1,'Octant ID']="Mod "+str(mod)
+    range_list=[0]
+    x=int(len(df)/mod)
+    for i in range (x):
+        range_list.append(mod*(i+1))
+    range_list.append(len(df))
+    for i in range(len(range_list)-1):
+        for octant in ['1','-1','2','-2','3','-3','4','-4']:
+            df.at[2+i,octant]=df['Octant'].iloc[range_list[i]:range_list[i+1]].value_counts()[int(octant)]
+        df.at[2+i,'Octant ID']=str(range_list[i])+" - "+ str(range_list[i+1]-1)
+        
 import pandas as pd
-df = pd.read_csv("D:\\ONEDRIVE\\Documents\\GitHub\\2001ME85_2022\\tut01\\octant_input.csv")
-#def octact_identification(mod):
-
+df = pd.read_csv("octant_input.csv")
 U_Avg  = df['U'].mean()
 df['U Avg']=''
 df.at[0,'U Avg']=U_Avg
@@ -78,8 +88,7 @@ df.at[0,'-3']=count33
 df.at[0,'4']=count4
 df.at[0,'-4']=count44
 df.at[1,'']="User Input"
-#mod=input()  
-
-#octact_identification(mod)
+mod=5000 
+octact_identification(mod)
 df.to_csv('octant_output.csv', index=False)  
 
