@@ -14,6 +14,7 @@ def octact_identification(mod=5000):
 #Range values are printed
         df.at[2+i,'Octant ID']=str(range_list[i])+" - "+ str(range_list[i+1]-1)
         
+from platform import python_version
 import pandas as pd
 #Reading the input csv file
 df = pd.read_csv("octant_input.csv")
@@ -112,5 +113,11 @@ mod=5000
 #function call
 octact_identification(mod)
 #Made output csv file named Octant_output.csv
+
+ver=python_version()
+if ver=='3.8.10':
+    print("Correct version installed")
+else:
+     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 df.to_csv('octant_output.csv', index=False)  
 
