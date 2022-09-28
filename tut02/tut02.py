@@ -1,5 +1,20 @@
 #def octant_transition_count(mod=5000):
-        
+        #Function defined
+def octact_identification(mod=5000):
+    df.at[1,'Octant ID']="Mod "+str(mod)
+#Created a list named range_list and added the range values in that
+    range_list=[0]
+    x=int(len(df)/mod)
+    for i in range (x):
+        range_list.append(mod*(i+1))
+    range_list.append(len(df))
+    for i in range(len(range_list)-1):
+#Found out the counts of each i=octant in the range
+        for octant in ['1','-1','2','-2','3','-3','4','-4']:
+            df.at[2+i,octant]=df['Octant'].iloc[range_list[i]:range_list[i+1]].value_counts()[int(octant)]
+#Range values are printed
+        df.at[2+i,'Octant ID']=str(range_list[i])+" - "+ str(range_list[i+1]-1)
+
 from platform import python_version
 import pandas as pd
 #Reading the input csv file
@@ -97,7 +112,7 @@ df.at[1,'']="User Input"
 
 mod=5000 
 #function call
-# octact_identification(mod)
+octact_identification(mod)
 #Made output csv file named Octant_output.csv
 
 ver = python_version()
@@ -108,6 +123,5 @@ else:
     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
 mod=5000
-#octact_identification(mod)
 #octant_transition_count(mod)
 df.to_excel('octant_output.xlsx', index=False)  
