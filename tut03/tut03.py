@@ -5,7 +5,16 @@ start_time = datetime.now()
 def octant_longest_subsequence_count():
     for i,x in enumerate(['1','-1','2','-2','3','-3','4','4']):
         df.at[i,'octant']=x
-    
+    for j,octval in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        count=0
+        maxi=0
+        for i in range(len(df['Octant'])):
+            if df['Octant'][i]==octval:
+                count+=1
+                maxi=max(count,maxi)
+            else:
+                count=0
+            
 
 from platform import python_version
 ver = python_version()
