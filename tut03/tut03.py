@@ -2,8 +2,10 @@ from datetime import datetime
 start_time = datetime.now()
 
 #Help https://youtu.be/H37f_x4wAC0
-#def octant_longest_subsequence_count():
-###Code
+def octant_longest_subsequence_count():
+    for i,x in enumerate(['1','-1','2','-2','3','-3','4','4']):
+        df.at[i,'octant']=x
+    
 
 from platform import python_version
 ver = python_version()
@@ -46,13 +48,16 @@ for i in range(len(df)):
        df.at[i,"Octant"]=4
     elif df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]<0:
         df.at[i,"Octant"]=-4
-        
+df['']=''
+df['octant']=''
+df['Subsequent']=''
+df['Count']=''
 if ver == "3.8.10":
     print("Correct Version Installed")
 else:
     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
+octant_longest_subsequence_count()
 df.to_excel('output_octant_transition_identify.xlsx', index=False)  
-#octant_longest_subsequence_count()
 
 #This shall be the last lines of the code.
 end_time = datetime.now()
