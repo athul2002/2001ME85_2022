@@ -26,6 +26,7 @@ def octant_transition_count(mod=5000):
     -4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0}
     }
 
+
     for num in range(len(range_list)-1):
         mod_row = Row_num+14+num*(14)
         mod_transitions_count = copy.deepcopy(Trans_count_dict)
@@ -39,10 +40,11 @@ def octant_transition_count(mod=5000):
         df.at[mod_row + 3, ''] = "From"
         for i in range(range_list[num], range_list[num+1]):
             mod_transitions_count[df['Octant'][i+1]][df['Octant'][i]]+=1
-
+    #mod transition count
         for i in mod_transitions_count:
             for idx, j in enumerate(mod_transitions_count[i]):
                 df.at[mod_row+3+idx,str(i)]=mod_transitions_count[i][j] 
+    #overall transition count
     for i in range(1, len(df['U'])):
         Trans_count_dict[df['Octant'][i]][df['Octant'][i-1]]+=1
     for i in Trans_count_dict:
