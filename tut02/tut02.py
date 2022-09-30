@@ -1,14 +1,20 @@
+#Function defined
 def octant_transition_count(mod=5000):
     range_list[-1]-=1
+
+    #heading of coloumns
     Row_num=2+len(range_list)+2
     df.at[2+len(range_list)+2,'Octant ID']="Overall Transition Count"
     df.at[Row_num+1,'''1''']="To"
     df.at[Row_num+2,'Octant ID']="Count"
     df.at[Row_num+3,'']="From"
+    
+    #Octant values printing in row and column manner
     for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
         df.at[Row_num+3+i,'Octant ID']=x
         df.at[Row_num+2,x]=x
-
+    
+    #dictionary for storing octant transition values
     Trans_count_dict = {
     1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
     -1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
@@ -19,12 +25,29 @@ def octant_transition_count(mod=5000):
     4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
     -4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0}
     }
+
+    for num in range(len(range_list)-1):
+        mod_row = Row_num+14+num*(14)
+        mod_transitions_count = copy.deepcopy(Trans_count_dict)
+        df.at[mod_row,'Octant ID'] = 'Mod Transition Count'
+        df.at[mod_row + 1, 'Octant ID'] = str(range_list[num]) + '-' + str(range_list[num+1]-1)
+        df.at[mod_row +2, 'Octant ID']="To"
+        df.at[mod_row +3, 'Octant ID'] = "Count"
+        for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
+            df.at[mod_row+3+i,'Octant ID']=x
+            df.at[mod_row+3,x]=x
+        df.at[mod_row + 3, ''] = "From"
+        for i in range(range_list[num], range_list[num+1]):
+            mod_transitions_count[df['Octant'][i+1]][df['Octant'][i]]+=1
+
+        for i in mod_transitions_count:
+            for idx, j in enumerate(mod_transitions_count[i]):
+                df.at[mod_row+3+idx,str(i)]=mod_transitions_count[i][j] 
     for i in range(1, len(df['U'])):
         Trans_count_dict[df['Octant'][i]][df['Octant'][i-1]]+=1
     for i in Trans_count_dict:
         for idx, j in enumerate(Trans_count_dict[i]):
-            df.at[Row_num+3+idx,str(i)]=Trans_count_dict[i][j]
-
+            df.at[Row_num+2+idx,str(i)]=Trans_count_dict[i][j]
             
 #Function defined
 def octact_identification(mod=5000):
