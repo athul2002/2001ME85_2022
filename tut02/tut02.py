@@ -1,9 +1,35 @@
-#def octant_transition_count(mod=5000):
-        #Function defined
+def octant_transition_count(mod=5000):
+    range_list[-1]-=1
+    Row_num=2+len(range_list)+2
+    df.at[2+len(range_list)+2,'Octant ID']="Overall Transition Count"
+    df.at[Row_num+1,'''1''']="To"
+    df.at[Row_num+2,'Octant ID']="Count"
+    df.at[Row_num+3,'']="From"
+    for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
+        df.at[Row_num+3+i,'Octant ID']=x
+        df.at[Row_num+2,x]=x
+
+    Trans_count_dict = {
+    1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0}
+    }
+    for i in range(1, len(df['U'])):
+        Trans_count_dict[df['Octant'][i]][df['Octant'][i-1]]+=1
+    for i in Trans_count_dict:
+        for idx, j in enumerate(Trans_count_dict[i]):
+            df.at[Row_num+3+idx,str(i)]=Trans_count_dict[i][j]
+
+            
+#Function defined
 def octact_identification(mod=5000):
     df.at[1,'Octant ID']="Mod "+str(mod)
 #Created a list named range_list and added the range values in that
-    range_list=[0]
     x=int(len(df)/mod)
     for i in range (x):
         range_list.append(mod*(i+1))
@@ -17,6 +43,7 @@ def octact_identification(mod=5000):
 
 from platform import python_version
 import pandas as pd
+import copy 
 #Reading the input csv file
 df = pd.read_excel("input_octant_transition_identify.xlsx")
 
@@ -111,6 +138,7 @@ df.at[0,'-4']=countiv
 df.at[1,'']="User Input"
 
 mod=5000 
+range_list=[0]
 #function call
 octact_identification(mod)
 #Made output csv file named Octant_output.csv
@@ -123,5 +151,5 @@ else:
     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
 mod=5000
-#octant_transition_count(mod)
+octant_transition_count(mod)
 df.to_excel('octant_output.xlsx', index=False)  
