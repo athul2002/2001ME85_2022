@@ -2,27 +2,44 @@ from datetime import datetime
 start_time = datetime.now()
 
 #Help https://youtu.be/H37f_x4wAC0
+
+# function definition
 def octant_longest_subsequence_count():
+
+    #printing octant values
     for i,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
         df.at[i,'octant']=x
+    
+    #finding longest subsequence and count of longest subsequence 
     for j,octval in enumerate([1,-1,2,-2,3,-3,4,-4]):
         count=0
         maxi=0
         Subsequence_count=0
+
+        #when the octant value in coloumn of Octant becomes equal 
+        #to that of octant value obtained through enumeration the count is increased
         for i in range(len(df['Octant'])):
             if df['Octant'][i]==octval:
                 count+=1
+
+                #Maximum value is updated when the count becomes greater than current maximum value.
                 maxi=max(count,maxi)
             else:
                 count=0
         count=0
+
+        #finding count of longest subsequence
         for i in range(len(df['Octant'])):
             if df['Octant'][i]==octval:
                 count+=1
+
+                #when the count becomes equal to maximum value obtained previously, subsequent count is increased
                 if(count==maxi):
                     Subsequence_count+=1
             else:
                 count=0
+        
+        # Printing the values in coloumns of excel
         df.at[j,'Subsequent']=maxi
         df.at[j,'Count']=Subsequence_count
             
@@ -76,7 +93,7 @@ if ver == "3.8.10":
 else:
     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 octant_longest_subsequence_count()
-df.to_excel('output_octant_transition_identify.xlsx', index=False)  
+df.to_excel('output_octant_longest_subsequence.xlsx', index=False)  
 
 #This shall be the last lines of the code.
 end_time = datetime.now()
