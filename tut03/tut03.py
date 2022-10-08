@@ -3,22 +3,32 @@ start_time = datetime.now()
 
 #Help https://youtu.be/H37f_x4wAC0
 def octant_longest_subsequence_count():
-    for i,x in enumerate(['1','-1','2','-2','3','-3','4','4']):
+    for i,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
         df.at[i,'octant']=x
     for j,octval in enumerate([1,-1,2,-2,3,-3,4,-4]):
         count=0
         maxi=0
+        Subsequence_count=0
         for i in range(len(df['Octant'])):
             if df['Octant'][i]==octval:
                 count+=1
                 maxi=max(count,maxi)
             else:
                 count=0
+        count=0
+        for i in range(len(df['Octant'])):
+            if df['Octant'][i]==octval:
+                count+=1
+                if(count==maxi):
+                    Subsequence_count+=1
+            else:
+                count=0
+        df.at[j,'Subsequent']=maxi
+        df.at[j,'Count']=Subsequence_count
             
-
+import pandas as pd
 from platform import python_version
 ver = python_version()
-import pandas as pd
 #Reading the input csv file
 df = pd.read_excel("input_octant_longest_subsequence.xlsx")
 
