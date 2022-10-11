@@ -4,7 +4,45 @@ start_time = datetime.now()
 
 #Help https://youtu.be/H37f_x4wAC0
 
-# def octant_longest_subsequence_count_with_range():
+def octant_longest_subsequence_count_with_range():
+     #printing octant values
+    for i,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        df.at[i,'octant']=x
+    
+    #finding longest subsequence and count of longest subsequence 
+    for j,octval in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        count=0
+        maxi=0
+        Subsequence_count=0
+
+        #when the octant value in coloumn of Octant becomes equal 
+        #to that of octant value obtained through enumeration the count is increased
+        for i in range(len(df['Octant'])):
+            if df['Octant'][i]==octval:
+                count+=1
+
+                #Maximum value is updated when the count becomes greater than current maximum value.
+                maxi=max(count,maxi)
+            else:
+                count=0
+        count=0
+
+        #finding count of longest subsequence
+        x=0 
+        list=[]
+        for i in range(len(df['Octant'])):
+            if df['Octant'][i]==octval:
+                count+=1
+
+                #when the count becomes equal to maximum value obtained previously, subsequent count is increased
+                if(count==maxi):     
+                    Subsequence_count+=1
+            else:
+                count=0
+        # Printing the values in coloumns of excel
+
+        df.at[j,'Longest Subsequence Length']=maxi
+        df.at[j,'Count']=Subsequence_count
 
 from platform import python_version
 ver = python_version()
@@ -50,9 +88,12 @@ try:
             elif df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]>0:
                 df.at[i,"Octant"]=4
             elif df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]<0:
-                df.at[i,"Octant"]=-4
+                df.at[i,"Octant"]=-4          
 
-        # octant_longest_subsequence_count_with_range()
+        df['']=''
+        df['octant']=''
+
+        octant_longest_subsequence_count_with_range()
 
         df.to_excel('output.xlsx', index=False)  
     except FileNotFoundError:
