@@ -23,8 +23,18 @@ def octant_range_names(mod=5000):
     rank_list_overall_2.sort(reverse=True)
     final_list_1=[]
     for i in range(0,len(rank_list_overall_2)):
-        final_list_1.append((rank_list_overall_2.index(rank_list_overall_1[i]))+1)      
-
+        final_list_1.append((rank_list_overall_2.index(rank_list_overall_1[i]))+1) 
+    for i in range(1,9):
+        df.at[0,'Rank'+str(i)]=final_list_1[i-1]
+        if final_list_1[i-1]==1:
+            z=i-1
+        for k,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
+            try: 
+                if k==z:
+                    value=x
+            except:
+                continue
+    df.at[0,'Rank1 OctantID']=value
     for i in range(len(range_list)-1):
         mod_list_1=[]
         mod_list_2=[]
@@ -36,8 +46,15 @@ def octant_range_names(mod=5000):
         for z in range(0,len(mod_list_2)):
             final_list_2.append((mod_list_2.index(mod_list_1[z]))+1)        
         for z in range(1,9):
-            df.at[0,'Rank'+str(z)]=final_list_1[z-1] 
             df.at[2+i,'Rank'+str(z)]=final_list_2[z-1]    
+            if final_list_2[z-1]==1:
+                a=z-1
+            for k,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
+                try: 
+                    if k==a:
+                        df.at[2+i,'Rank1 OctantID']=x
+                except:
+                    continue
 
 
 from platform import python_version
