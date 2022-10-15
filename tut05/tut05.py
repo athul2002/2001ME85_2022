@@ -58,6 +58,32 @@ def octant_range_names(mod=5000):
                 except:
                     continue
 
+    df.at[4+len(range_list),'1']='Octant ID'
+    df.at[4+len(range_list),'-1']='Octant Name'
+    df.at[4+len(range_list),'2']='Count of Rank 1 Mod Values'
+    count_list=[0,0,0,0,0,0,0,0]
+    for i in range(2,len(df['Rank1 OctantID'])):
+        if df['Rank1 OctantID'][i]==1:
+            count_list[0]+=1
+        elif df['Rank1 OctantID'][i]==-1:
+              count_list[1]+=1  
+        elif df['Rank1 OctantID'][i]==2:
+              count_list[2]+=1  
+        elif df['Rank1 OctantID'][i]==-2:
+              count_list[3]+=1      
+        elif df['Rank1 OctantID'][i]==3:
+              count_list[4]+=1      
+        elif df['Rank1 OctantID'][i]==-3:
+              count_list[5]+=1  
+        elif df['Rank1 OctantID'][i]==4:
+              count_list[6]+=1  
+        elif df['Rank1 OctantID'][i]==-4:
+              count_list[7]+=1  
+    for x,octval in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        df.at[5+len(range_list)+x,'1']=octval
+        df.at[5+len(range_list)+x,'-1']=octant_name_id_mapping.get(str(octval))
+        df.at[5+len(range_list)+x,'2']=count_list[x]
+
 
 from platform import python_version
 ver = python_version()
