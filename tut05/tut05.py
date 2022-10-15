@@ -14,6 +14,31 @@ def octant_range_names(mod=5000):
         for octant in ['1','-1','2','-2','3','-3','4','-4']:
             df.at[2+i,octant]=df['Octant'].iloc[range_list[i]:range_list[i+1]].value_counts()[int(octant)]
         df.at[2+i,'Octant ID']=str(range_list[i])+" - "+ str(range_list[i+1]-1)  
+    
+    rank_list_overall_1=[]
+    rank_list_overall_2=[]    
+    for y in ['1','-1','2','-2','3','-3','4','-4']:
+        rank_list_overall_1.append(df[y][0])
+        rank_list_overall_2.append(df[y][0])
+    rank_list_overall_2.sort(reverse=True)
+    final_list_1=[]
+    for i in range(0,len(rank_list_overall_2)):
+        final_list_1.append((rank_list_overall_2.index(rank_list_overall_1[i]))+1)      
+
+    for i in range(len(range_list)-1):
+        mod_list_1=[]
+        mod_list_2=[]
+        for y in ['1','-1','2','-2','3','-3','4','-4']:
+            mod_list_1.append(df[y][2+i])
+            mod_list_2.append(df[y][2+i])
+        mod_list_2.sort(reverse=True)
+        final_list_2=[]
+        for z in range(0,len(mod_list_2)):
+            final_list_2.append((mod_list_2.index(mod_list_1[z]))+1)        
+        for z in range(1,9):
+            df.at[0,'Rank'+str(z)]=final_list_1[z-1] 
+            df.at[2+i,'Rank'+str(z)]=final_list_2[z-1]    
+
 
 from platform import python_version
 ver = python_version()
