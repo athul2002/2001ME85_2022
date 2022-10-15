@@ -2,8 +2,18 @@ from datetime import datetime
 start_time = datetime.now()
 
 #Help https://youtu.be/N6PBd4XdnEw
-# def octant_range_names(mod=5000):
-#     octant_name_id_mapping = {"1":"Internal outward interaction", "-1":"External outward interaction", "2":"External Ejection", "-2":"Internal Ejection", "3":"External inward interaction", "-3":"Internal inward interaction", "4":"Internal sweep", "-4":"External sweep"}
+def octant_range_names(mod=5000):
+    octant_name_id_mapping = {"1":"Internal outward interaction", "-1":"External outward interaction", "2":"External Ejection", "-2":"Internal Ejection", "3":"External inward interaction", "-3":"Internal inward interaction", "4":"Internal sweep", "-4":"External sweep"}
+    df.at[1,'Octant ID']="Mod "+str(mod)
+    range_list=[0]
+    x=int(len(df)/mod)
+    for i in range (x):
+        range_list.append(mod*(i+1))
+    range_list.append(len(df))
+    for i in range(len(range_list)-1):
+        for octant in ['1','-1','2','-2','3','-3','4','-4']:
+            df.at[2+i,octant]=df['Octant'].iloc[range_list[i]:range_list[i+1]].value_counts()[int(octant)]
+        df.at[2+i,'Octant ID']=str(range_list[i])+" - "+ str(range_list[i+1]-1)  
 
 from platform import python_version
 ver = python_version()
@@ -77,7 +87,7 @@ else:
     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
 mod=5000
-# octant_range_names(mod)
+octant_range_names(mod)
 df.to_excel('octant_outputsample.xlsx', index=False)  
 
 #This shall be the last lines of the code.
