@@ -35,6 +35,7 @@ def octant_range_names(mod=5000):
             except:
                 continue
     df.at[0,'Rank1 OctantID']=value
+    df.at[0,'Rank1 Octant Name']=octant_name_id_mapping.get(str(value))
     for i in range(len(range_list)-1):
         mod_list_1=[]
         mod_list_2=[]
@@ -53,6 +54,7 @@ def octant_range_names(mod=5000):
                 try: 
                     if k==a:
                         df.at[2+i,'Rank1 OctantID']=x
+                        df.at[2+i,'Rank1 Octant Name']=octant_name_id_mapping.get(str(x))
                 except:
                     continue
 
