@@ -207,6 +207,94 @@ def octant_range_names(mod=5000):
         except:
             print("An error occured while printing Longest subsequence / Count ")
             break
+    df['      ']=''
+     #printing octant values
+    for i,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        df.at[i,'octant']=x
+    
+    #initialized variables for getting row number
+    c1=0
+    l1=0
+    c2=0
+    #finding longest subsequence and count of longest subsequence 
+    for j,octval in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        count=0
+        maxi=0
+        Subsequence_count=0
+
+        try:
+            #when the octant value in coloumn of Octant becomes equal 
+            #to that of octant value obtained through enumeration the count is increased
+            for i in range(len(df['Octant'])):
+                if df['Octant'][i]==octval:
+                    count+=1
+
+                    #Maximum value is updated when the count becomes greater than current maximum value.
+                    maxi=max(count,maxi)
+                else:
+                    count=0
+            count=0
+        except:
+            print("Error while finding longest subsequence of octant:",octval)
+        #finding count of longest subsequence
+        x=0 
+        list=[]
+        try:
+            for i in range(len(df['Octant'])):
+                if df['Octant'][i]==octval:
+                    count+=1
+
+                    #when the count becomes equal to maximum value obtained previously, subsequent count is increased
+                    if(count==maxi):     
+                        Subsequence_count+=1
+
+                        # when count becomes equal to longest subsequence value, the index is added to list
+                        list.append(i)
+                else:
+                    count=0
+        except:
+            print("Error while finding count of longest subsequence of octant :",octval)
+        try:
+            # Printing the values in coloumns of excel
+            df.at[j,'Longest Subsequence Length']=maxi
+            df.at[j,'Count']=Subsequence_count
+        except:
+            print("Error while printing Longest subsequence and count")
+        
+        try:
+            # printing octant values in Octant_2 column and string Time
+            df.at[c1,'Octant_2']=octval
+            c1+=1
+            df.at[c1,'Octant_2']='Time'
+
+            # increasing c1 by total number of subsequence count to match the given format 
+            for i in range(Subsequence_count+1):
+                c1+=1
+            
+            # printing longest subsequence value in the column
+            df.at[l1,'Longest Subsequence Length 2']=maxi
+            l1+=1
+            df.at[l1,'Longest Subsequence Length 2']='From'
+            l1+=1
+
+            # printing the From time range for all the longest subsequence using the help of list of longest subsequence created before
+            for i in range(len(list)):
+                df.at[l1,'Longest Subsequence Length 2']=df['T'][list[i]+1-maxi]
+                l1+=1
+            df.at[c2,'Count_2']=Subsequence_count
+            c2+=1
+            df.at[c2,'Count_2']='To'
+            c2+=1
+
+            # printing the To time for all the longest subsequence using the help of list of longest subsequence created before
+            for i in range(len(list)):
+                df.at[c2,'Count_2']=df['T'][list[i]]
+                c2+=1
+        except:
+            print("Error while printing time range of longest subsequence")
+
+
+
 from platform import python_version
 ver = python_version()
 try:
