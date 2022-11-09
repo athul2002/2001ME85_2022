@@ -46,7 +46,7 @@ def attendance_report():
     set_date=({datetime.strptime(str(i).split(" ")[0],"%d-%m-%Y").date() for i in df['Timestamp']  if datetime.strptime(str(i).split(" ")[0],"%d-%m-%Y").strftime('%a') in ['Mon','Thu']})
     list_date=list(set_date)
     list_date.sort()
-    attendance={rollno:{date:{'actual':0,'invalid':0,'duplicate':0,} for date in list_date} for rollno in roll_nums}
+    attendance={rollno:{date:{'real':0,'invalid':0,'duplicate':0,} for date in list_date} for rollno in roll_nums}
     for i in range(len(df['Timestamp'])):
         d = (datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M')).date()
         rollno=(str(df['Attendance'][i])).split(" ")[0]
@@ -55,8 +55,8 @@ def attendance_report():
                 rollno=(str(df['Attendance'][i])).split(" ")[0]
                 if rollno == 'nan' or rollno not in roll_nums:
                     continue
-                if attendance[rollno][d]['actual']==0:
-                    attendance[rollno][d]['actual']+=1
+                if attendance[rollno][d]['real']==0:
+                    attendance[rollno][d]['real']+=1
                 else:
                     attendance[rollno][d]['duplicate']+=1
             else:
@@ -73,20 +73,20 @@ def attendance_report():
         real_count=0
         for date in list_date:
             dfi.at[count,'Date']=date
-            dfi.at[count,'Total Attendance']=attendance[df1['Roll No'][i]][date]['actual']+attendance[df1['Roll No'][i]][date]['duplicate']+attendance[df1['Roll No'][i]][date]['invalid']
-            dfi.at[count,'Real']=attendance[df1['Roll No'][i]][date]['actual']
+            dfi.at[count,'Total Attendance']=attendance[df1['Roll No'][i]][date]['real']+attendance[df1['Roll No'][i]][date]['duplicate']+attendance[df1['Roll No'][i]][date]['invalid']
+            dfi.at[count,'Real']=attendance[df1['Roll No'][i]][date]['real']
             dfi.at[count,'Duplicate']=attendance[df1['Roll No'][i]][date]['duplicate']
             dfi.at[count,'Invalid']=attendance[df1['Roll No'][i]][date]['invalid']
-            dfi.at[count,'Absent']=1-attendance[df1['Roll No'][i]][date]['actual']
+            dfi.at[count,'Absent']=1-attendance[df1['Roll No'][i]][date]['real']
             count+=1
             dfc.at[i,'Roll']=df1['Roll No'][i]
             dfc.at[i,'Name']=df1['Name'][i]
-            if attendance[df1['Roll No'][i]][date]['actual']==1:
+            if attendance[df1['Roll No'][i]][date]['real']==1:
                 dfc.at[i,date]='P'
                 real_count+=1
             else:
                 dfc.at[i,date]='A'
-        dfc.at[i,'Real']=len(list_date)
+        dfc.at[i,'Actual Lecture Taken']=len(list_date)
         dfc.at[i,'Total Real']=real_count
         dfc.at[i,'Percentage']=round((real_count/len(list_date))*100,2)
         dfi.to_excel('./output/' + df1['Roll No'][i] + '.xlsx',index=False)
@@ -106,7 +106,7 @@ list_actual=[]
 roll_nums = [str(i) for i in df1['Roll No']]
 attendance_report()
 dfc.to_excel('./output/attendance_report_consolidated.xlsx',index=False)
-send_mail()
+# send_mail()
 #This shall be the last lines of the code.
 end_time = datetime.now()
 print('Duration of Program Execution: {}'.format(end_time - start_time))
