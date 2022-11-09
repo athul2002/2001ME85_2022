@@ -116,56 +116,67 @@ def octant_range_names(mod=5000):
         df.at[2+len(range_list)+x,'Rank Octant -4']=octant_name_id_mapping.get(str(octval))
         df.at[2+len(range_list)+x,'Rank1 OctantID']=count_list[x]
     df['  ']=''
-    # range_list[-1]-=1
+    range_list[-1]-=1
+    df['AH']=''
+    df['AI']=''
+    df['AJ']=''
+    df['AK']=''
+    df['AL']=''
+    df['AM']=''
+    df['AN']=''
+    df['AO']=''
+    df['AP']=''
+    df['AQ']=''
 
-    # #heading of coloumns
-    # Row_num=2+len(range_list)+2
-    # df.at[2+len(range_list)+2,'Octant ID']="Overall Transition Count"
-    # df.at[Row_num+1,'''1''']="To"
-    # df.at[Row_num+2,'Octant ID']="Count"
-    # df.at[Row_num+3,'']="From"
+    # # #heading of coloumns
+    Row_num=0
+    df.at[Row_num,'AI']="Overall Transition Count"
+    df.at[Row_num+1,'AJ']="To"
+    df.at[Row_num+2,'AI']="Octant"
+    df.at[Row_num+3,'AH']="From"
+    columns=['AJ','AK','AL','AM','AN','AO','AP','AQ']
+    #Octant values printing in row and column manner
+    for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
+        df.at[Row_num+3+i,'AI']=x
+        df.at[Row_num+2,columns[i]]=x
     
-    # #Octant values printing in row and column manner
-    # for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
-    #     df.at[Row_num+3+i,'Octant ID']=x
-    #     df.at[Row_num+2,x]=x
-    
-    # #dictionary for storing octant transition values
-    # Trans_count_dict = {
-    # 1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
-    # -1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
-    # 2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
-    # -2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
-    # 3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
-    # -3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
-    # 4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
-    # -4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0}
-    # }
+    # # #dictionary for storing octant transition values
+    Trans_count_dict = {
+    1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    -4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0}
+    }
 
 
-    # for num in range(len(range_list)-1):
-    #     mod_row = Row_num+14+num*(14)
-    #     mod_transitions_count = copy.deepcopy(Trans_count_dict)
-    #     df.at[mod_row,'Octant ID'] = 'Mod Transition Count'
-    #     df.at[mod_row + 1, 'Octant ID'] = str(range_list[num]) + '-' + str(range_list[num+1]-1)
-    #     df.at[mod_row +2, 'Octant ID']="To"
-    #     df.at[mod_row +3, 'Octant ID'] = "Count"
-    #     for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
-    #         df.at[mod_row+3+i,'Octant ID']=x
-    #         df.at[mod_row+3,x]=x
-    #     df.at[mod_row + 3, ''] = "From"
-    #     for i in range(range_list[num], range_list[num+1]):
-    #         mod_transitions_count[df['Octant'][i+1]][df['Octant'][i]]+=1
-    # #mod transition count
-    #     for i in mod_transitions_count:
-    #         for idx, j in enumerate(mod_transitions_count[i]):
-    #             df.at[mod_row+3+idx,str(i)]=mod_transitions_count[i][j] 
-    # #overall transition count
-    # for i in range(1, len(df['U'])):
-    #     Trans_count_dict[df['Octant'][i]][df['Octant'][i-1]]+=1
-    # for i in Trans_count_dict:
-    #     for idx, j in enumerate(Trans_count_dict[i]):
-    #         df.at[Row_num+2+idx,str(i)]=Trans_count_dict[i][j]
+    for num in range(len(range_list)-1):
+        mod_row = Row_num+14+num*(14)
+        mod_transitions_count =copy.deepcopy(Trans_count_dict)
+        df.at[mod_row,'AI'] = 'Mod Transition Count'
+        df.at[mod_row + 1, 'AI'] = str(range_list[num]) + '-' + str(range_list[num+1]-1)
+        df.at[mod_row +1, 'AJ']="To"
+        df.at[mod_row +2, 'AI'] = "Octant"
+        for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
+            df.at[mod_row+3+i,'AI']=x
+            df.at[mod_row+2,columns[i]]=x
+        df.at[mod_row + 3, 'AH'] = "From"
+        for i in range(range_list[num], range_list[num+1]):
+            mod_transitions_count[df['Octant'][i+1]][df['Octant'][i]]+=1
+    #mod transition count
+        for x,i in enumerate(mod_transitions_count):
+            for idx, j in enumerate(mod_transitions_count[i]):
+                df.at[mod_row+3+idx,columns[x]]=mod_transitions_count[i][j] 
+    #overall transition count
+    for i in range(1, len(df['U'])):
+        Trans_count_dict[df['Octant'][i]][df['Octant'][i-1]]+=1
+    for x,i in enumerate(Trans_count_dict):
+        for idx, j in enumerate(Trans_count_dict[i]):
+            df.at[Row_num+3+idx,columns[x]]=Trans_count_dict[i][j]
+
     df['    ']=''
     #printing octant values
     for i,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
@@ -296,6 +307,9 @@ def octant_range_names(mod=5000):
 
 
 from platform import python_version
+import copy
+import os
+import openpyxl
 ver = python_version()
 try:
     import pandas as pd
@@ -304,17 +318,17 @@ try:
         df = pd.read_excel("./input/1.0.xlsx")
         
         #computing the average values of U,V and W and adding them to column
-        U_Avg  = round(df['U'].mean(),3)
+        U_Avg  = df['U'].mean()
         df.at[0,'U Avg']=U_Avg
-        V_Avg  = round(df['V'].mean(),3)
+        V_Avg  =df['V'].mean()
         df.at[0,'V Avg']=V_Avg
-        W_Avg  = round(df['W'].mean(),3)
+        W_Avg  = df['W'].mean()
         df.at[0,'W Avg']=W_Avg
         
         #computing U',V' and W'
-        df["U'=U - U avg"]=round(df['U']-df['U Avg'][0],3)
-        df["V'=V - V avg"]=round(df['V']-df['V Avg'][0],3)
-        df["W'=W - W avg"]=round(df['W']-df['W Avg'][0],3)
+        df["U'=U - U avg"]=df['U']-df['U Avg'][0]
+        df["V'=V - V avg"]=df['V']-df['V Avg'][0]
+        df["W'=W - W avg"]=df['W']-df['W Avg'][0]
         #Finding the Octant and adding those in Octant column
         for i in range(len(df)):
             if df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]>0 and df["W'=W - W avg"][i]>0:
@@ -336,7 +350,7 @@ try:
         mod=5000
 
         df['']=''
-        df.at[0,' ']='Mod'+str(mod)
+        df.at[0,' ']='Mod '+str(mod)
         df.at[0,'Octant ID']="Overall Count"
         df.reset_index(drop=True) 
         count1,counti,count2,countii,count3,countiii,count4,countiv=0,0,0,0,0,0,0,0
@@ -371,10 +385,9 @@ try:
         df.at[0,'-3']=countiii
         df.at[0,'4']=count4
         df.at[0,'-4']=countiv
-
         octant_range_names(mod)
-
         df.to_excel('octant.xlsx', index=False)  
+        
     except FileNotFoundError:
         print("Unable to open the file! Please check again")
 
