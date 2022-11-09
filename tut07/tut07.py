@@ -115,8 +115,98 @@ def octant_range_names(mod=5000):
         df.at[2+len(range_list)+x,'Rank Octant 4']=octval
         df.at[2+len(range_list)+x,'Rank Octant -4']=octant_name_id_mapping.get(str(octval))
         df.at[2+len(range_list)+x,'Rank1 OctantID']=count_list[x]
+    df['  ']=''
+    # range_list[-1]-=1
+
+    # #heading of coloumns
+    # Row_num=2+len(range_list)+2
+    # df.at[2+len(range_list)+2,'Octant ID']="Overall Transition Count"
+    # df.at[Row_num+1,'''1''']="To"
+    # df.at[Row_num+2,'Octant ID']="Count"
+    # df.at[Row_num+3,'']="From"
+    
+    # #Octant values printing in row and column manner
+    # for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
+    #     df.at[Row_num+3+i,'Octant ID']=x
+    #     df.at[Row_num+2,x]=x
+    
+    # #dictionary for storing octant transition values
+    # Trans_count_dict = {
+    # 1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    # -1: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    # 2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    # -2: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    # 3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    # -3: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    # 4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0},
+    # -4: {1: 0,-1: 0,2: 0,-2: 0,3: 0,-3: 0,4: 0,-4: 0}
+    # }
 
 
+    # for num in range(len(range_list)-1):
+    #     mod_row = Row_num+14+num*(14)
+    #     mod_transitions_count = copy.deepcopy(Trans_count_dict)
+    #     df.at[mod_row,'Octant ID'] = 'Mod Transition Count'
+    #     df.at[mod_row + 1, 'Octant ID'] = str(range_list[num]) + '-' + str(range_list[num+1]-1)
+    #     df.at[mod_row +2, 'Octant ID']="To"
+    #     df.at[mod_row +3, 'Octant ID'] = "Count"
+    #     for i,x in enumerate(['1','-1','2','-2','3','-3','4','-4']):
+    #         df.at[mod_row+3+i,'Octant ID']=x
+    #         df.at[mod_row+3,x]=x
+    #     df.at[mod_row + 3, ''] = "From"
+    #     for i in range(range_list[num], range_list[num+1]):
+    #         mod_transitions_count[df['Octant'][i+1]][df['Octant'][i]]+=1
+    # #mod transition count
+    #     for i in mod_transitions_count:
+    #         for idx, j in enumerate(mod_transitions_count[i]):
+    #             df.at[mod_row+3+idx,str(i)]=mod_transitions_count[i][j] 
+    # #overall transition count
+    # for i in range(1, len(df['U'])):
+    #     Trans_count_dict[df['Octant'][i]][df['Octant'][i-1]]+=1
+    # for i in Trans_count_dict:
+    #     for idx, j in enumerate(Trans_count_dict[i]):
+    #         df.at[Row_num+2+idx,str(i)]=Trans_count_dict[i][j]
+    df['    ']=''
+    #printing octant values
+    for i,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        df.at[i,'octant']=x
+    
+    #finding longest subsequence and count of longest subsequence 
+    for j,octval in enumerate([1,-1,2,-2,3,-3,4,-4]):
+        count=0
+        maxi=0
+        Subsequence_count=0
+
+        #when the octant value in coloumn of Octant becomes equal 
+        #to that of octant value obtained through enumeration the count is increased
+        for i in range(len(df['Octant'])):
+            if df['Octant'][i]==octval:
+                count+=1
+
+                #Maximum value is updated when the count becomes greater than current maximum value.
+                maxi=max(count,maxi)
+            else:
+                count=0
+        count=0
+
+        #finding count of longest subsequence
+        for i in range(len(df['Octant'])):
+            if df['Octant'][i]==octval:
+                count+=1
+
+                #when the count becomes equal to maximum value obtained previously, subsequent count is increased
+                if(count==maxi):
+                    Subsequence_count+=1
+            else:
+                count=0
+        
+        # Printing the values in coloumns of excel
+        try:
+            df.at[j,'Longest Subsequence Length']=maxi
+            df.at[j,'Count']=Subsequence_count
+        except:
+            print("An error occured while printing Longest subsequence / Count ")
+            break
 from platform import python_version
 ver = python_version()
 try:
