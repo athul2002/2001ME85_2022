@@ -1,5 +1,45 @@
 from datetime import datetime
 start_time = datetime.now()
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib, ssl
+
+def send_mail():
+    subject = "Attendance report"
+    body = "Attendnace report of students registered for CS384 course"
+    sender_email = "xyz@gmail.com"
+    receiver_email = "cs3842022@gmail.com"
+    password = "changeMe"
+    # Create a multipart message and set headers
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    message["Subject"] = subject
+    # Adding body to email
+    message.attach(MIMEText(body, "plain"))
+    # Opening file in binary mode
+    with open('./output/attendance_report_consolidated.xlsx', "rb") as attachment:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(attachment.read())
+    # Encode file in ASCII characters to send by email    
+    encoders.encode_base64(part)
+    # Adding header as key/value pair to attachment part
+    part.add_header(
+        "Content-Disposition",
+        f"attachment; filename= {'attendance_report_consolidated.xlsx'}",
+    )
+    # Adding attachment to message and convert message to string
+    message.attach(part)
+    text = message.as_string()
+
+    # Log in to server using secure context and send email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, text)
+
 
 def attendance_report():
     roll_nums = [str(i) for i in df1['Roll No']]
@@ -19,7 +59,6 @@ def attendance_report():
                     attendance[rollno][d]['actual']+=1
                 else:
                     attendance[rollno][d]['duplicate']+=1
-                    print(rollno)
             else:
                 attendance[rollno][d]['invalid']+=1
         else:
@@ -67,6 +106,7 @@ list_actual=[]
 roll_nums = [str(i) for i in df1['Roll No']]
 attendance_report()
 dfc.to_excel('./output/attendance_report_consolidated.xlsx',index=False)
+send_mail()
 #This shall be the last lines of the code.
 end_time = datetime.now()
 print('Duration of Program Execution: {}'.format(end_time - start_time))
