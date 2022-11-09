@@ -26,10 +26,12 @@ def attendance_report():
             continue 
     dfi=pd.DataFrame()
     dfi.at[0,'Date']=''
+    
     for i in range(len(df1['Roll No'])):
         dfi.at[0,'Roll']=df1['Roll No'][i]
         dfi.at[0,'Name']=df1['Name'][i]  
         count=1
+        real_count=0
         for date in list_date:
             dfi.at[count,'Date']=date
             dfi.at[count,'Total Attendance']=attendance[df1['Roll No'][i]][date]['actual']+attendance[df1['Roll No'][i]][date]['duplicate']+attendance[df1['Roll No'][i]][date]['invalid']
@@ -38,6 +40,16 @@ def attendance_report():
             dfi.at[count,'Invalid']=attendance[df1['Roll No'][i]][date]['invalid']
             dfi.at[count,'Absent']=1-attendance[df1['Roll No'][i]][date]['actual']
             count+=1
+            dfc.at[i,'Roll']=df1['Roll No'][i]
+            dfc.at[i,'Name']=df1['Name'][i]
+            if attendance[df1['Roll No'][i]][date]['actual']==1:
+                dfc.at[i,date]='P'
+                real_count+=1
+            else:
+                dfc.at[i,date]='A'
+        dfc.at[i,'Real']=len(list_date)
+        dfc.at[i,'Total Real']=real_count
+        dfc.at[i,'Percentage']=round((real_count/len(list_date))*100,2)
         dfi.to_excel('./output/' + df1['Roll No'][i] + '.xlsx',index=False)
 
 from platform import python_version
