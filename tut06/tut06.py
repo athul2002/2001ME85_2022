@@ -36,77 +36,106 @@ def send_mail():
 
     # Log in to server using secure context and send email
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, text)
-
-
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, text)
+    except:
+        print("Unable to send mail. Check the credentials.")
 def attendance_report():
-    roll_nums = [str(i) for i in df1['Roll No']]
-    set_date=({datetime.strptime(str(i).split(" ")[0],"%d-%m-%Y").date() for i in df['Timestamp']  if datetime.strptime(str(i).split(" ")[0],"%d-%m-%Y").strftime('%a') in ['Mon','Thu']})
-    list_date=list(set_date)
-    list_date.sort()
-    attendance={rollno:{date:{'real':0,'invalid':0,'duplicate':0,} for date in list_date} for rollno in roll_nums}
-    for i in range(len(df['Timestamp'])):
-        d = (datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M')).date()
-        rollno=(str(df['Attendance'][i])).split(" ")[0]
-        if (datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').weekday() == 0 or datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').weekday() == 3):
-            if datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').hour==14 or (datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').hour==15 and datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').minute==00):
-                rollno=(str(df['Attendance'][i])).split(" ")[0]
-                if rollno == 'nan' or rollno not in roll_nums:
-                    continue
-                if attendance[rollno][d]['real']==0:
-                    attendance[rollno][d]['real']+=1
+    try:
+        roll_nums = [str(i) for i in df1['Roll No']]
+        set_date=({datetime.strptime(str(i).split(" ")[0],"%d-%m-%Y").date() for i in df['Timestamp']  if datetime.strptime(str(i).split(" ")[0],"%d-%m-%Y").strftime('%a') in ['Mon','Thu']})
+        list_date=list(set_date)
+        list_date.sort()
+        attendance={rollno:{date:{'real':0,'invalid':0,'duplicate':0,} for date in list_date} for rollno in roll_nums}
+        for i in range(len(df['Timestamp'])):
+            d = (datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M')).date()
+            rollno=(str(df['Attendance'][i])).split(" ")[0]
+            if (datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').weekday() == 0 or datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').weekday() == 3):
+                if datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').hour==14 or (datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').hour==15 and datetime.strptime(str(df['Timestamp'][i]), '%d-%m-%Y %H:%M').minute==00):
+                    rollno=(str(df['Attendance'][i])).split(" ")[0]
+                    if rollno == 'nan' or rollno not in roll_nums:
+                        continue
+                    if attendance[rollno][d]['real']==0:
+                        attendance[rollno][d]['real']+=1
+                    else:
+                        attendance[rollno][d]['duplicate']+=1
                 else:
-                    attendance[rollno][d]['duplicate']+=1
+                    attendance[rollno][d]['invalid']+=1
             else:
-                attendance[rollno][d]['invalid']+=1
-        else:
-            continue 
+                continue 
+    except:
+        print("An error occured while calculating attendance.")
     dfi=pd.DataFrame()
     dfi.at[0,'Date']=''
-    
-    for i in range(len(df1['Roll No'])):
-        dfi.at[0,'Roll']=df1['Roll No'][i]
-        dfi.at[0,'Name']=df1['Name'][i]  
-        count=1
-        real_count=0
-        for date in list_date:
-            dfi.at[count,'Date']=date
-            dfi.at[count,'Total Attendance']=attendance[df1['Roll No'][i]][date]['real']+attendance[df1['Roll No'][i]][date]['duplicate']+attendance[df1['Roll No'][i]][date]['invalid']
-            dfi.at[count,'Real']=attendance[df1['Roll No'][i]][date]['real']
-            dfi.at[count,'Duplicate']=attendance[df1['Roll No'][i]][date]['duplicate']
-            dfi.at[count,'Invalid']=attendance[df1['Roll No'][i]][date]['invalid']
-            dfi.at[count,'Absent']=1-attendance[df1['Roll No'][i]][date]['real']
-            count+=1
-            dfc.at[i,'Roll']=df1['Roll No'][i]
-            dfc.at[i,'Name']=df1['Name'][i]
-            if attendance[df1['Roll No'][i]][date]['real']==1:
-                dfc.at[i,date]='P'
-                real_count+=1
-            else:
-                dfc.at[i,date]='A'
-        dfc.at[i,'Actual Lecture Taken']=len(list_date)
-        dfc.at[i,'Total Real']=real_count
-        dfc.at[i,'Percentage']=round((real_count/len(list_date))*100,2)
-        dfi.to_excel('./output/' + df1['Roll No'][i] + '.xlsx',index=False)
-
+    try:
+        for i in range(len(df1['Roll No'])):
+            dfi.at[0,'Roll']=df1['Roll No'][i]
+            dfi.at[0,'Name']=df1['Name'][i]  
+            count=1
+            real_count=0
+            total_real=0
+            total_duplicate=0
+            total_invalid=0
+            for date in list_date:
+                dfi.at[count,'Date']=date
+                dfi.at[count,'Total Attendance']=attendance[df1['Roll No'][i]][date]['real']+attendance[df1['Roll No'][i]][date]['duplicate']+attendance[df1['Roll No'][i]][date]['invalid']
+                dfi.at[count,'Real']=attendance[df1['Roll No'][i]][date]['real']
+                total_real+=attendance[df1['Roll No'][i]][date]['real']
+                dfi.at[count,'Duplicate']=attendance[df1['Roll No'][i]][date]['duplicate']
+                total_duplicate+=attendance[df1['Roll No'][i]][date]['duplicate']
+                dfi.at[count,'Invalid']=attendance[df1['Roll No'][i]][date]['invalid']
+                total_invalid+=attendance[df1['Roll No'][i]][date]['invalid']
+                dfi.at[count,'Absent']=1-attendance[df1['Roll No'][i]][date]['real']
+                count+=1
+                dfc.at[i,'Roll']=df1['Roll No'][i]
+                dfc.at[i,'Name']=df1['Name'][i]
+                if attendance[df1['Roll No'][i]][date]['real']==1:
+                    dfc.at[i,date]='P'
+                    real_count+=1
+                else:
+                    dfc.at[i,date]='A'
+                
+            dfc.at[i,'Actual Lecture Taken']=len(list_date)
+            dfc.at[i,'Total Real']=real_count
+            dfc.at[i,'Percentage']=round((real_count/len(list_date))*100,2)
+            dfi.at[0,'Real']=total_real
+            dfi.at[0,'Duplicate']=total_duplicate
+            dfi.at[0,'Invalid']=total_invalid
+            dfi.at[0,'Absent']=len(list_date)-total_real
+            dfi.to_excel('./output/' + df1['Roll No'][i] + '.xlsx',index=False)
+    except:
+        print("An error occured while printing.")
 from platform import python_version
 ver = python_version()
-import pandas as pd
-df1=pd.read_csv("input_registered_students.csv")
-df=pd.read_csv("input_attendance.csv")
-if ver == "3.8.10":
-    print("Correct Version Installed")
-else:
-    print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
-dfc = pd.DataFrame()
-list_fake=[]
-list_actual=[]
-roll_nums = [str(i) for i in df1['Roll No']]
-attendance_report()
-dfc.to_excel('./output/attendance_report_consolidated.xlsx',index=False)
-# send_mail()
+try:
+    import pandas as pd
+    try:
+        df1=pd.read_csv("input_registered_students.csv")
+        df=pd.read_csv("input_attendance.csv")
+        if ver == "3.8.10":
+            print("Correct Version Installed")
+        else:
+            print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
+        dfc = pd.DataFrame()
+        list_fake=[]
+        list_actual=[]
+        roll_nums = [str(i) for i in df1['Roll No']]
+        try:
+            attendance_report()
+        except:
+            print("Function not defined.")
+        dfc.to_excel('./output/attendance_report_consolidated.xlsx',index=False)
+        try:
+            send_mail()
+        except:
+            print("Mail function not found.")
+    except FileNotFoundError:
+        print("File not found. Please try again.")
+except ModuleNotFoundError:
+    print("Module not found!")
+
 #This shall be the last lines of the code.
 end_time = datetime.now()
 print('Duration of Program Execution: {}'.format(end_time - start_time))
