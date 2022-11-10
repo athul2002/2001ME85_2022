@@ -1,6 +1,54 @@
 from datetime import datetime
 start_time = datetime.now()
 
+def modification(file):
+    workbook = load_workbook(filename='output/'+file)
+    sheet = workbook.active
+    #removing the column heading we given previously
+    for coloumns in ['AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ']:
+        sheet[coloumns + '1'] = ''
+    side=Side(border_style='thin', color="000000")
+    border=Border(top=side,bottom=side,left=side,right=side)
+    #giving border for ranking
+    for cell in sheet['N1':'AF' + str(ranges+2)]:
+        for c in cell:
+            c.border = border
+    #giving border for count of Rank mod values
+    for cell in sheet['AC' + str(ranges+4):'AE' + str(ranges+12)]:
+        for c in cell:
+            c.border = border
+    #giving border for overall transition count
+    for cell in sheet['AI4':'AQ12']:
+        for c in cell:
+            c.border = border
+    #giving border for mod transition count
+    for i in range(ranges):
+        for cell in sheet['AI' + str(18 + 14*i):'AQ' + str(26 + 14*i)]:
+            for c in cell:
+                c.border = border
+    #giving border for longest subsequence length
+    for cell in sheet['AS1':'AU9']:
+        for c in cell:
+            c.border = border
+    #giving border for longest subsequence range
+    for cell in sheet['AW1':'AY' + str(17 + sum([sheet['AU' + str(i)].value for i in range(2, 10)]))]:
+        for c in cell:
+            c.border = border
+    
+    #giving colour for rank1 ocant
+    style = DifferentialStyle(fill=PatternFill(bgColor='FFFF00'))
+    rank_rule = Rule(type="expression", dxf=style)
+    rank_rule.formula = ['W2=1']
+    sheet.conditional_formatting.add("W2:AE" + str(ranges + 2), rank_rule)
+    #giving colour for highest transition count
+    max_rule = Rule(type="expression", dxf=style)
+    max_rule.formula = ['AJ4=MAX($AJ4:$AQ4)']
+    sheet.conditional_formatting.add("AJ4:AQ12", max_rule)
+    for i in range(ranges ):
+        rule = Rule(type="expression", dxf=style)
+        rule.formula = ['AJ' + str(19 + 14*i) + '=MAX($AJ' + str(19 + 14*i) + ':$AQ' + str(19 + 14*i) + ')']
+        sheet.conditional_formatting.add("AJ" + str(19 + 14*i) + ":AQ" + str(26 + 14*i), rule)  
+    workbook.save('output/'+file)
 #Help https://youtu.be/N6PBd4XdnEw
 def octant_range_names(mod=5000):
     octant_name_id_mapping = {"1":"Internal outward interaction", "-1":"External outward interaction", "2":"External Ejection", "-2":"Internal Ejection", "3":"External inward interaction", "-3":"Internal inward interaction", "4":"Internal sweep", "-4":"External sweep"}
@@ -9,7 +57,8 @@ def octant_range_names(mod=5000):
     range_list=[0]
     #initialised x as variable for getting number of mod ranges
     x=int(len(df)/mod)
-    
+    global ranges 
+    ranges= x+1
     #adding range values in the list
     for i in range (x):
         range_list.append(mod*(i+1))
@@ -309,14 +358,19 @@ def octant_range_names(mod=5000):
 from platform import python_version
 import copy
 import os
-import openpyxl
+from openpyxl import load_workbook
+from openpyxl.styles import Border, Side, PatternFill
+from openpyxl.styles.differential import DifferentialStyle
+from openpyxl.formatting.rule import Rule 
 ver = python_version()
 try:
     import pandas as pd
-    try:
-        #Reaading the input excel file
-        df = pd.read_excel("./input/1.0.xlsx")
-        
+
+    for filename in os.listdir('input'):
+        f=os.path.join('input',filename)
+        if not os.path.isfile(f) or not f.endswith('.xlsx'):
+            continue
+        df=pd.read_excel(f)
         #computing the average values of U,V and W and adding them to column
         U_Avg  = df['U'].mean()
         df.at[0,'U Avg']=U_Avg
@@ -383,13 +437,12 @@ try:
         df.at[0,'-2']=countii
         df.at[0,'3']=count3
         df.at[0,'-3']=countiii
+
         df.at[0,'4']=count4
         df.at[0,'-4']=countiv
         octant_range_names(mod)
-        df.to_excel('octant.xlsx', index=False)  
-        
-    except FileNotFoundError:
-        print("Unable to open the file! Please check again")
+        df.to_excel('output/'+ filename, index=False)  
+        modification(filename)
 
 except ImportError:
     print("Module Pandas not Found!")
