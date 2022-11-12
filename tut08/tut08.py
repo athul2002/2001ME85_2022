@@ -39,7 +39,46 @@ def scorecard():
 				if inns['bowling'][bowler]['balls']%6==0:
 					if inns['bowling'][bowler]['run']==run_initial:
 						inns['bowling'][bowler]['maiden']+=1	
-
+				#finding the runs scored from commentary 
+				runs = info.split(",")[1].strip()
+				#if the commentary says no run, number of balls is increased by 1,
+				#no.of balls faced by batsman is increased by 1, his batting status is not out and no.of bowls by bowlwer also increased by 1
+				if runs == "no run":
+					inns['balls']+=1
+					inns['batting'][batter]['balls']+=1
+					inns['batting'][batter]['status']="not out"
+					inns['bowling'][bowler]['balls']+=1
+				#when number of runs is 1,2 or other integers, the number of runs scored is added to the total, batsmans and bowlers dictionary
+				elif runs.find('run')!= -1:
+					for n in range(0,7):
+						if runs == str(n)+" run":
+							inns['balls'] += 1
+							inns['run'] += n
+							inns['bowling'][bowler]['run'] += n
+							inns['bowling'][bowler]['balls'] += 1
+							inns['batting'][batter]['run'] += n
+							inns['batting'][batter]['balls'] += 1
+							inns['batting'][batter]['status']="not out"
+				#when the commentary says four, 4 runs is added
+				elif runs == "FOUR":
+					inns['balls'] += 1
+					inns['run'] += 4
+					inns['bowling'][bowler]['run'] += 4
+					inns['bowling'][bowler]['balls'] += 1
+					inns['batting'][batter]['run'] += 4
+					inns['batting'][batter]['balls'] += 1
+					inns['batting'][batter]['4s'] += 1
+					inns['batting'][batter]['status']="not out"
+				#when the commentary says six, 6 runs is added to the total runs
+				elif runs == "SIX":
+					inns['balls'] += 1
+					inns['run'] += 6
+					inns['bowling'][bowler]['run'] += 6
+					inns['bowling'][bowler]['balls'] += 1					
+					inns['batting'][batter]['run'] += 6
+					inns['batting'][batter]['status']="not out"
+					inns['batting'][batter]['balls'] += 1
+					inns['batting'][batter]['6s'] += 1
 from platform import python_version
 ver = python_version()
 
