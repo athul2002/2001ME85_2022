@@ -20,10 +20,11 @@ def scorecard():
 	inns1 = {'run': 0, 'wicket': 0, 'balls': 0, 'bowling': {player : {'run': 0, 'balls': 0, 'maiden': 0, 'wicket': 0, 'nb': 0, 'wide': 0} for player in team_india},'batting': {player : {'balls': 0,'run': 0, '4s': 0, '6s': 0, 'status': ''} for player in team_pakistan}, 'extras': {'bye': 0, 'nb': 0, 'lb': 0, 'wide': 0, 'p': 0}, 'did_not_bat': team_pakistan.copy(), 'fall_of_wicket': [], 'powerplay': 0}
 	inns2 = {'run': 0, 'wicket': 0, 'balls': 0, 'bowling': {player : {'run': 0, 'balls': 0, 'maiden': 0, 'wicket': 0, 'nb': 0, 'wide': 0} for player in team_pakistan},'batting': {player : {'balls': 0,'run': 0,'4s': 0, '6s': 0, 'status': ''} for player in team_india}, 'extras': {'bye': 0, 'nb': 0, 'lb': 0, 'wide': 0, 'p': 0}, 'did_not_bat': team_india.copy(), 'fall_of_wicket': [], 'powerplay': 0}
 	run_initial=-1
-	with open('india_inns2.txt', 'r') as innings2, open('pak_inns1.txt', 'r') as innings1:
+	with open('india_inns2.txt', 'r') as innings2, open('pak_inns1.txt', 'r') as innings1, open('scorecard.txt', 'w') as output:
 		#reading the commentary text files
 		commentary1 = innings1.readlines()
 		commentary2 = innings2.readlines()
+		innings=1
 		for inns, lines in zip([inns1, inns2], [commentary1, commentary2]):	
 			for info in [line for line in lines if line.strip()]:
 				#finding the batsmans name from the lines
@@ -44,11 +45,36 @@ def scorecard():
 				over_number=info.split(",")[0].split(" ", 1)[0].strip()
 				#if the commentary says no run, number of balls is increased by 1,
 				#no.of balls faced by batsman is increased by 1, his batting status is not out and no.of bowls by bowlwer also increased by 1
-				if runs == "no run":
+								#when a batsman is out
+				#wicket count is added by 1
+				#the wicket count of bowler is inceased by 1
+				if runs.split(" ")[0].strip() == "out":
+					inns['balls'] += 1
+					inns['wicket'] += 1	
+					inns['bowling'][bowler]['wicket'] += 1
+					inns['bowling'][bowler]['balls'] += 1
+					inns['batting'][batter]['balls'] += 1
+			
+					#the below line used to store the fall of wicket status.
+					inns['fall_of_wicket'].append(f"{inns['run']}-{inns['wicket']} ({batter}, {over_number})")
+					#when batsman out by caught out
+					#bowler name is added to status
+					if runs.startswith('out Caught by'):
+						inns['batting'][batter]['status'] = f"c {runs.split('!!')[0].split('out Caught by', 1)[1].strip()} b {bowler}"
+					#when batsman out by lbw
+					#bowler name is added to status
+					elif runs.startswith('out Lbw!!'):
+						inns['batting'][batter]['status'] = f"lbw b {bowler}"
+					#when batsman out by bowled
+					#bowler name is added to status
+					elif runs.startswith('out Bowled!!'):
+						inns['batting'][batter]['status'] = f"b {bowler}"
+				elif runs == "no run":
 					inns['balls']+=1
 					inns['batting'][batter]['balls']+=1
 					inns['batting'][batter]['status']="not out"
 					inns['bowling'][bowler]['balls']+=1
+
 				#when number of runs is 1,2 or other integers, the number of runs scored is added to the total, batsmans and bowlers dictionary
 				elif runs.find('run')!= -1:
 					for n in range(0,7):
@@ -61,7 +87,9 @@ def scorecard():
 							inns['batting'][batter]['balls'] += 1
 							inns['batting'][batter]['status']="not out"
 				#when the commentary says four, 4 runs is added
+
 				elif runs == "FOUR":
+					
 					inns['balls'] += 1
 					inns['run'] += 4
 					inns['bowling'][bowler]['run'] += 4
@@ -80,31 +108,10 @@ def scorecard():
 					inns['batting'][batter]['status']="not out"
 					inns['batting'][batter]['balls'] += 1
 					inns['batting'][batter]['6s'] += 1
-				#when a batsman is out
-				#wicket count is added by 1
-				#the wicket count of bowler is inceased by 1
-				elif runs.split(" ")[0].strip() == "out":
-					inns['balls'] += 1
-					inns['wicket'] += 1	
-					inns['bowling'][bowler]['wicket'] += 1
-					inns['bowling'][bowler]['balls'] += 1
-					inns['batting'][batter]['balls'] += 1
-					#the below line used to store the fall of wicket status.
-					inns['fall_of_wicket'].append(f"{inns['run']}-{inns['wicket']} ({batter}, {over_number})")
-					#when batsman out by caught out
-					#bowler name is added to status
-					if runs.startswith('out Caught by'):
-						inns['batting'][batter]['status'] = f"c {runs.split('!!')[0].split('out Caught by', 1)[1].strip()} b {bowler}"
-					#when batsman out by lbw
-					#bowler name is added to status
-					elif runs.startswith('out Lbw!!'):
-						inns['batting'][batter]['status'] = f"lbw b {bowler}"
-					#when batsman out by bowled
-					#bowler name is added to status
-					elif runs.startswith('out Bowled!!'):
-						inns['batting'][batter]['status'] = f"b {bowler}"
+
 				#finding extras from the commentry
 				#when its a bye or legbye, no.of balls increased by 1 
+
 				elif  runs == "leg bye" or runs == "bye" :
 					inns['balls'] += 1
 					inns['bowling'][bowler]['balls'] += 1
@@ -154,8 +161,60 @@ def scorecard():
 							inns['bowling'][bowler]['wide'] += n
 					inns['batting'][batter]['status']="not out"
 				#When it is 36 balls, the run is added to powerplay run
+
 				if(inns['balls']==36):
 					inns['powerplay'] = inns['run']
+				
+			#Printing scores of Pakistan innings
+			if innings==1:
+				print(f"{'Pakistan innings' : <50}{f'''{inns['run']}-{inns['wicket']} ({over_number} Ov)''' : >95}", file=output)
+				print(" ",file=output)
+				innings+=1
+			#when the loops runs for second time to print Indian innings, this prints
+			elif(innings==2):
+				print(f"{'Indian innings' : <50}{f'''{inns['run']}-{inns['wicket']} ({over_number} Ov)''' : >95}", file=output)
+				print(" ",file=output)
+			#printing the heading batter and the headings like R,B,4s,6s etc
+			print(f"{'Batter' : <50}{'' : <55}{'R' : ^8}{'B' : ^8}{'4s' : ^8}{'6s' : ^8}{'SR' : ^12}", file=output)
+			print(" ",file=output)
+			#printing the batting scorecard
+			#<means used for left alingning, ^ for centre aligning and > for right alignment
+			for batsman, data in inns['batting'].items():
+				if data['status'] != '':
+					print(f"{batsman : <50}{data['status'] : <55}{data['run'] : ^8}{data['balls'] : ^8}{data['4s'] : ^8}{data['6s'] : ^8}{round((data['run']/data['balls'])*100, 2) : ^12}", file=output)
+			print(" ",file=output)
+			#printing the extras of the innings
+			print(f"{'Extras' : <50}{f'''{inns['extras']['wide']+inns['extras']['bye']+inns['extras']['nb']+inns['extras']['lb']+inns['extras']['p'] : >44}(b {inns['extras']['bye']},lb {inns['extras']['lb']},w {inns['extras']['wide']},nb {inns['extras']['nb']},p {inns['extras']['p']})''':>82}", file=output)
+			print(" ",file=output)
+			#printing the Total runs and wickets of the innings
+			print(f"{'Total' : <50}{f'''{inns['run']} ({inns['wicket']} wkts, {over_number} Ov)''' : >79}", file=output)
+			print(" ",file=output)
+			#printing list of people who didnt bat
+			if inns['did_not_bat']:
+				print(f"{'Did not Bat' : <50}{', '.join(inns['did_not_bat']) : >44}", file=output)
+			#printing fall of wicket details
+			print("Fall of wicket", file=output)
+			print(", ".join(inns['fall_of_wicket']), file=output)
+			print(" ",file=output)
+
+			#printing the bowling status
+			#the below line prints the heading
+			print(f"{'Bowler' : <50}{'' : <45}{'O' : ^7}{'M' : ^7}{'R' : ^7}{'W' : ^7}{'NB' : ^7}{'WD' : ^7}{'ECO' : ^12}", file=output)
+			print(" ",file=output)
+			#the below ones used for printing the bowling status of the bowlers. The runs spent, maiden over, noballs etc
+			for bowler, data in inns['bowling'].items():
+				if data['balls']:
+					total_overs=data['balls']//6
+					extra_balls=data['balls']%6
+					overall_overs=str(total_overs)+'.'+str(extra_balls)
+					print(f"{bowler : <50}{'' : <45}{overall_overs : ^7}{data['maiden'] : ^7}{data['run'] : ^7}{data['wicket'] : ^7}{data['nb'] : ^7}{data['wide'] : ^7}{round(data['run']/(total_overs+(extra_balls/6)),1) : ^12}", file=output)
+			print(" ",file=output)
+			#printing the runs scored in powerplay
+			print(f"{'Powerplays' : <50}{'Overs' : ^55}{'run' : >35}", file=output)
+			print(" ",file=output)
+			print(f"{'Mandatory' : <50}{'0.1-6' : ^55}{inns['powerplay']: >35}", file=output)
+			print(" ",file=output)
+
 from platform import python_version
 ver = python_version()
 
