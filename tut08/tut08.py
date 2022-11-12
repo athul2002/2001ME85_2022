@@ -41,12 +41,10 @@ def scorecard():
 						bowler = getBowler(info.split(",")[0].split(" ", 1)[1].split("to")[0].strip())
 					except:
 						print("Error while getting bowler details")
-					#finding maiden over. If the runs remains same as that of initial runs, maiden over count is increased by 1
-					if inns['bowling'][bowler]['balls']%6==1:
-						run_initial=inns['bowling'][bowler]['run']
+					#finding maiden over.
+					#getting runs when its start of bowling
 					if inns['bowling'][bowler]['balls']%6==0:
-						if inns['bowling'][bowler]['run']==run_initial:
-							inns['bowling'][bowler]['maiden']+=1	
+						run_initial=inns['bowling'][bowler]['run']
 					#finding the runs scored from commentary 
 					runs = info.split(",")[1].strip()
 					over_number=info.split(",")[0].split(" ", 1)[0].strip()
@@ -168,9 +166,12 @@ def scorecard():
 								inns['bowling'][bowler]['wide'] += n
 						inns['batting'][batter]['status']="not out"
 					#When it is 36 balls, the run is added to powerplay run
-
 					if(inns['balls']==36):
 						inns['powerplay'] = inns['run']
+					#when its end of over, %6 gives zero and if the run is same as initial run, maiden is increased by 1
+					if inns['bowling'][bowler]['balls']%6==0:
+						if inns['bowling'][bowler]['run']==run_initial:
+							inns['bowling'][bowler]['maiden']+=1	
 					
 				#Printing scores of Pakistan innings
 				if innings==1:
@@ -240,7 +241,7 @@ if ver == "3.8.10":
 else:
 	print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 try:
-	scorecard()
+	scorecard()	
 except:
 	print("The function scorecard does not exist")
 #This shall be the last lines of the code.
