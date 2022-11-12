@@ -41,6 +41,7 @@ def scorecard():
 						inns['bowling'][bowler]['maiden']+=1	
 				#finding the runs scored from commentary 
 				runs = info.split(",")[1].strip()
+				over_number=info.split(",")[0].split(" ", 1)[0].strip()
 				#if the commentary says no run, number of balls is increased by 1,
 				#no.of balls faced by batsman is increased by 1, his batting status is not out and no.of bowls by bowlwer also increased by 1
 				if runs == "no run":
@@ -79,6 +80,29 @@ def scorecard():
 					inns['batting'][batter]['status']="not out"
 					inns['batting'][batter]['balls'] += 1
 					inns['batting'][batter]['6s'] += 1
+				#when a batsman is out
+				#wicket count is added by 1
+				#the wicket count of bowler is inceased by 1
+				elif runs.split(" ")[0].strip() == "out":
+					inns['balls'] += 1
+					inns['wicket'] += 1	
+					inns['bowling'][bowler]['wicket'] += 1
+					inns['bowling'][bowler]['balls'] += 1
+					inns['batting'][batter]['balls'] += 1
+					#the below line used to store the fall of wicket status.
+					inns['fall_of_wicket'].append(f"{inns['run']}-{inns['wicket']} ({batter}, {over_number})")
+					#when batsman out by caught out
+					#bowler name is added to status
+					if runs.startswith('out Caught by'):
+						inns['batting'][batter]['status'] = f"c {runs.split('!!')[0].split('out Caught by', 1)[1].strip()} b {bowler}"
+					#when batsman out by lbw
+					#bowler name is added to status
+					elif runs.startswith('out Lbw!!'):
+						inns['batting'][batter]['status'] = f"lbw b {bowler}"
+					#when batsman out by bowled
+					#bowler name is added to status
+					elif runs.startswith('out Bowled!!'):
+						inns['batting'][batter]['status'] = f"b {bowler}"
 from platform import python_version
 ver = python_version()
 
