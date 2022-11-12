@@ -103,6 +103,59 @@ def scorecard():
 					#bowler name is added to status
 					elif runs.startswith('out Bowled!!'):
 						inns['batting'][batter]['status'] = f"b {bowler}"
+				#finding extras from the commentry
+				#when its a bye or legbye, no.of balls increased by 1 
+				elif  runs == "leg bye" or runs == "bye" :
+					inns['balls'] += 1
+					inns['bowling'][bowler]['balls'] += 1
+					inns['batting'][batter]['balls'] += 1
+					inns['batting'][batter]['status']="not out"
+					#when the team got run by bye,it is added to total runs 
+					run = info.split(",")[2].strip()
+					if(run == 'no run'):
+						continue
+					#when its a bye four 4 runs is added
+					elif(run == 'FOUR'):
+						inns['run'] += 4
+						if runs == "bye":
+							inns['extras']['bye'] += 4
+						else:
+							inns['extras']['lb'] += 4
+					#when its a 1,2,3 or 4 runs by bye it is added to runs
+					elif run.find('run')!= -1: 
+						for n in range(1,5):
+							if(run == str(n)+' run'):
+								inns['run'] += n
+								if runs == "bye":
+									inns['extras']['bye'] += n
+								else:
+									inns['extras']['lb'] += n
+				#when its a no ball 
+				elif runs == "no ball":
+					inns['run']+=1
+					inns['bowling'][bowler]['nb']+=1
+					inns['bowling'][bowler]['run']+=1
+					inns['extras']['nb'] += 1
+					inns['batting'][batter]['status']="not out"
+				#when its a wide and 1 runs, 1 is added to total run
+				elif runs == "wide":
+					inns['run']+=1
+					inns['extras']['wide'] += 1
+					inns['bowling'][bowler]['run'] += 1
+					inns['bowling'][bowler]['wide'] += 1
+					inns['batting'][batter]['status']="not out"
+				#when its a wide and more than 1 runs, it is added to total run
+				elif runs.find('wides')!=-1:
+					for n in range(2,6):
+						if runs == str(n)+' wides':
+							inns['run'] += n
+							inns['extras']['wide'] += n
+							inns['bowling'][bowler]['run'] += n
+							inns['bowling'][bowler]['wide'] += n
+					inns['batting'][batter]['status']="not out"
+				#When it is 36 balls, the run is added to powerplay run
+				if(inns['balls']==36):
+					inns['powerplay'] = inns['run']
 from platform import python_version
 ver = python_version()
 
