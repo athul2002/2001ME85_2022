@@ -2,8 +2,11 @@ from datetime import datetime
 start_time = datetime.now()
 
 def modification(file):
-    workbook = load_workbook(filename='output/'+file)
-    sheet = workbook.active
+    try:
+        workbook = load_workbook(filename=file)
+        sheet = workbook.active
+    except FileNotFoundError:
+        print("File does not exist. Try again!")
     #removing the column heading we given previously
     for coloumns in ['AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ']:
         sheet[coloumns + '1'] = ''
@@ -48,9 +51,13 @@ def modification(file):
         rule = Rule(type="expression", dxf=style)
         rule.formula = ['AJ' + str(19 + 14*i) + '=MAX($AJ' + str(19 + 14*i) + ':$AQ' + str(19 + 14*i) + ')']
         sheet.conditional_formatting.add("AJ" + str(19 + 14*i) + ":AQ" + str(26 + 14*i), rule)  
-    workbook.save('output/'+file)
+    workbook.save('output/'+ str(x[0]) +' cm_vel_octant_analysis_mod_'+str(mod)+'.xlsx')
 #Help https://youtu.be/N6PBd4XdnEw
-def octant_range_names(mod=5000):
+def octant_analysis(mod=5000):
+
+###################################################################################################################
+###################################################################################################################
+#prining the overall count and rank of octants
     octant_name_id_mapping = {"1":"Internal outward interaction", "-1":"External outward interaction", "2":"External Ejection", "-2":"Internal Ejection", "3":"External inward interaction", "-3":"Internal inward interaction", "4":"Internal sweep", "-4":"External sweep"}
 
     #initialised a list for getting range values
@@ -164,6 +171,9 @@ def octant_range_names(mod=5000):
         df.at[2+len(range_list)+x,'Rank Octant 4']=octval
         df.at[2+len(range_list)+x,'Rank Octant -4']=octant_name_id_mapping.get(str(octval))
         df.at[2+len(range_list)+x,'Rank1 OctantID']=count_list[x]
+###################################################################################################################
+###################################################################################################################
+#                 printing the transition count   
     df['  ']=''
     range_list[-1]-=1
     df['AH']=''
@@ -267,6 +277,9 @@ def octant_range_names(mod=5000):
         except:
             print("An error occured while printing Longest subsequence / Count ")
             break
+###################################################################################################################
+###################################################################################################################
+#                  printing the longest subsequence   
     df['      ']=''
      #printing octant values
     for i,x in enumerate([1,-1,2,-2,3,-3,4,-4]):
@@ -320,7 +333,9 @@ def octant_range_names(mod=5000):
             df.at[j,'Count']=Subsequence_count
         except:
             print("Error while printing Longest subsequence and count")
-        
+###################################################################################################################
+###################################################################################################################
+#                   printing the longest subsequence with time range        
         try:
             # printing octant values in Octant_2 column and string Time
             df.at[c1,'Octant_2']=octval
@@ -353,7 +368,8 @@ def octant_range_names(mod=5000):
         except:
             print("Error while printing time range of longest subsequence")
 
-
+###################################################################################################################
+###################################################################################################################
 
 from platform import python_version
 import copy
@@ -373,33 +389,33 @@ try:
         df=pd.read_excel(f)
         #computing the average values of U,V and W and adding them to column
         U_Avg  = df['U'].mean()
-        df.at[0,'U Avg']=U_Avg
+        df.at[0,'U Avg']=round(U_Avg,3)
         V_Avg  =df['V'].mean()
-        df.at[0,'V Avg']=V_Avg
+        df.at[0,'V Avg']=round(V_Avg,3)
         W_Avg  = df['W'].mean()
-        df.at[0,'W Avg']=W_Avg
+        df.at[0,'W Avg']=round(W_Avg,3)
         
         #computing U',V' and W'
-        df["U'=U - U avg"]=df['U']-df['U Avg'][0]
-        df["V'=V - V avg"]=df['V']-df['V Avg'][0]
-        df["W'=W - W avg"]=df['W']-df['W Avg'][0]
+        df["U'=U - U avg"]=round(df['U']-df['U Avg'][0],3)
+        df["V'=V - V avg"]=round(df['V']-df['V Avg'][0],3)
+        df["W'=W - W avg"]=round(df['W']-df['W Avg'][0],3)
         #Finding the Octant and adding those in Octant column
         for i in range(len(df)):
-            if df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]>0 and df["W'=W - W avg"][i]>0:
+            if df["U'=U - U avg"][i]>=0 and df["V'=V - V avg"][i]>=0 and df["W'=W - W avg"][i]>=0:
                 df.at[i,"Octant"]=1
-            elif df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]>0 and df["W'=W - W avg"][i]<0:
+            elif df["U'=U - U avg"][i]>=0 and df["V'=V - V avg"][i]>=0 and df["W'=W - W avg"][i]<0:
                 df.at[i,"Octant"]=-1
-            elif df["U'=U - U avg"][i]<0 and df["V'=V - V avg"][i]>0 and df["W'=W - W avg"][i]>0:
+            elif df["U'=U - U avg"][i]<0 and df["V'=V - V avg"][i]>=0 and df["W'=W - W avg"][i]>=0:
                 df.at[i,"Octant"]=2
-            elif df["U'=U - U avg"][i]<0 and df["V'=V - V avg"][i]>0 and df["W'=W - W avg"][i]<0:
+            elif df["U'=U - U avg"][i]<0 and df["V'=V - V avg"][i]>=0 and df["W'=W - W avg"][i]<0:
                 df.at[i,"Octant"]=-2
-            elif df["U'=U - U avg"][i]<0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]>0:
+            elif df["U'=U - U avg"][i]<0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]>=0:
                 df.at[i,"Octant"]=3
             elif df["U'=U - U avg"][i]<0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]<0:
                 df.at[i,"Octant"]=-3
-            elif df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]>0:
+            elif df["U'=U - U avg"][i]>=0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]>=0:
                 df.at[i,"Octant"]=4
-            elif df["U'=U - U avg"][i]>0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]<0:
+            elif df["U'=U - U avg"][i]>=0 and df["V'=V - V avg"][i]<0 and df["W'=W - W avg"][i]<0:
                 df.at[i,"Octant"]=-4
         mod=5000
 
@@ -437,13 +453,18 @@ try:
         df.at[0,'-2']=countii
         df.at[0,'3']=count3
         df.at[0,'-3']=countiii
-
         df.at[0,'4']=count4
         df.at[0,'-4']=countiv
-        octant_range_names(mod)
-        df.to_excel('output/'+ filename, index=False)  
-        modification(filename)
 
+        octant_analysis(mod)
+
+        x=filename.split('.xlsx')
+        df.to_excel('output/'+ str(x[0]) +' cm_vel_octant_analysis_mod_'+str(mod)+'.xlsx', index=False)
+        try:
+            modification('output/'+ str(x[0]) +' cm_vel_octant_analysis_mod_'+str(mod)+'.xlsx')
+        except:
+            print("Error while function call.")  
+        
 except ImportError:
     print("Module Pandas not Found!")
 
