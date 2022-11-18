@@ -51,7 +51,7 @@ def modification(file):
         rule = Rule(type="expression", dxf=style)
         rule.formula = ['AJ' + str(19 + 14*i) + '=MAX($AJ' + str(19 + 14*i) + ':$AQ' + str(19 + 14*i) + ')']
         sheet.conditional_formatting.add("AJ" + str(19 + 14*i) + ":AQ" + str(26 + 14*i), rule)  
-    workbook.save('output/'+ str(x[0]) +' cm_vel_octant_analysis_mod_'+str(mod)+'.xlsx')
+    workbook.save('output/'+ str(x[0]) +'_octant_analysis_mod_'+str(mod)+'.xlsx')
 #Help https://youtu.be/N6PBd4XdnEw
 def octant_analysis(mod=5000):
 
@@ -459,9 +459,9 @@ try:
         octant_analysis(mod)
 
         x=filename.split('.xlsx')
-        df.to_excel('output/'+ str(x[0]) +' cm_vel_octant_analysis_mod_'+str(mod)+'.xlsx', index=False)
+        df.to_excel('output/'+ str(x[0]) +'_octant_analysis_mod_'+str(mod)+'.xlsx', index=False)
         try:
-            modification('output/'+ str(x[0]) +' cm_vel_octant_analysis_mod_'+str(mod)+'.xlsx')
+            modification('output/'+ str(x[0]) +'_octant_analysis_mod_'+str(mod)+'.xlsx')
         except:
             print("Error while function call.")  
         
