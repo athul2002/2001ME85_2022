@@ -8,6 +8,9 @@ from pathlib import Path
 from datetime import datetime 
 import streamlit as st
 s=0
+st.set_page_config(
+    page_title="PSAT",
+)
 st.title("Project 3")
 start_time = datetime.now() 
 print(start_time.strftime("%c"))
@@ -944,15 +947,15 @@ if b1 or st.session_state.load_state:
                         write_timestamp_to_file(name)    
                         name = add_front_name(name,i)
                         store()
-            st.success('Successfully Computed', icon="✅")
+            st.success('Successfull', icon="✅")
             dat=pd.read_csv('Results_v2.csv')
             csv=dat.to_csv().encode('utf-8')
-            x=st.download_button(
+            down=st.download_button(
             label="Download data as CSV",
             data=csv,
             file_name='Results_v2.csv',
             mime='text/csv')
-            if(x):
+            if down:
                 st.success('Successfully Downloaded', icon="✅")
                 
 
